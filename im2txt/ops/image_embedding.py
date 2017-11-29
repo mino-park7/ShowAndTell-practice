@@ -95,7 +95,7 @@ def inception_v3(images,
                 net = slim.avg_pool2d(net, shape[1:3], padding="VALID", scope="pool")
                 net = slim.dropout(
                     net,
-                    keep_prob-dropout_keep_prob,
+                    keep_prob=dropout_keep_prob,
                     is_training=is_inception_model_training,
                     scope="dropout")
                 net = slim.flatten(net, scope = "flatten")
