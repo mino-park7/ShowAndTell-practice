@@ -57,7 +57,7 @@ def distort_image(image, thread_id):
         # The random_* ops do not necessarily clamp.
         image = tf.clip_by_value(image, 0.0, 1.0)
 
-     return image
+    return image
 
 
 def process_image(encoded_image,
@@ -108,7 +108,33 @@ def process_image(encoded_image,
     image_summary("original_image", image)
 
     # Resize image.
-    assert (resize > 0) == (resize_width > 0)
+    assert (resize_height > 0) == (resize_width > 0)
     if resize_height:
-        image
+        image = tf.image.resize_images(image,
+                                       size=[resize_height, resize_width],
+                                       method=tf.image.ResizeMethod.BILINEAR)
+
+    # Crop to final dimensions.
+    if is_training:
+        image = tf.random_crop(image, [height, width, 3])
+    else:
+        # Central crop, assuming resize_height > height, resize_width > width
+        image = tf.image.resize_image_with_crop_or_pad(image, height, width)
+
+    image_summary("resized_image", image)
+
+    # Randomly distort the image.
+    if is_training:
+        image = distort_image(image, thread_id)
+
+    image_summary("final_image", image)
+
+    # Rescale to [-1, 1] instead of [0, 1]
+    image = tf.subtract(image, 0.5)
+    image = tf.multiply(image, 2.0)
+    return image
+
+
+
+
 
