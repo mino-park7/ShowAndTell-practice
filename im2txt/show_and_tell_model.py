@@ -362,7 +362,7 @@ class ShowAndTellModel(object):
 
     def build(self):
         """Creates all ops for training and evaluation."""
-        self.biold_inputs()
+        self.build_inputs()
         self.build_image_embedding()
         self.build_seq_embeddings()
         self.build_model()
