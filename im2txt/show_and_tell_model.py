@@ -332,10 +332,43 @@ class ShowAndTellModel(object):
                 tf.summary.histogram("parameters/"+var.op.name, var)
 
             self.total_loss = total_loss
-            self.target_cross_entropy_losses = losses
-            self.target_cross_entropy_losses_weights = weights
+            self.target_cross_entropy_losses = losses # Used in evaluation.
+            self.target_cross_entropy_losses_weights = weights # Used in evaluation
 
-    def
+    def setup_inception_initializer(self):
+        """Sets up the function to restore inception variables from checkpoint"""
+        if self.mode != "inference":
+            # Restore inception variables only.
+            saver = tf.train.Saver(self.inception_variables)
+
+            def restore_fn(sess):
+                tf.logging.info("Restoring Inception variables from checkpoint file %s",
+                                self.config.inception_checkpoint_file)
+                saver.restore(sess, self.config.inception_checkpoint_file)
+
+            self.init_fn=restore_fn
+
+
+    def setup_global_step(self):
+        """Sets up the global step Tensor."""
+        global_step = tf.Variable(
+            initial_value=0,
+            name="global_step",
+            trainable=False,
+            collections=[tf.GraphKeys.GLOBAL_STEP, tf.GraphKeys.GLOBAL_VARIABLES]
+        )
+
+        self.global_step = global_step
+
+    def build(self):
+        """Creates all ops for training and evaluation."""
+        self.biold_inputs()
+        self.build_image_embedding()
+        self.build_seq_embeddings()
+        self.build_model()
+        self.setup_inception_initializer()
+        self.setup_global_step()
+
 
 
 
