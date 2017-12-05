@@ -38,7 +38,7 @@ class ModelConfig(object):
         # mixing between shards in training.
         self.values_per_input_shard = 2300
         # Minimum number of shards to keep in the input queue.
-        self.input_qeueue_capacity_factor = 2
+        self.input_queue_capacity_factor = 2
         # Number of threads for prefetching SequenceExample protos.
         self.num_input_reader_threads = 1
 
