@@ -103,7 +103,7 @@ tf.flags.DEFINE_string("train_image_dir", "/tmp/train2014/",
 tf.flags.DEFINE_string("val_image_dir", "/tmp/val2014",
                        "Validation image directory.")
 
-tf.flags.DEFINE_string("train_captions_files", "/tmp/captions_train2014.json",
+tf.flags.DEFINE_string("train_captions_file", "/tmp/captions_train2014.json",
                        "Training captions JSON file.")
 tf.flags.DEFINE_string("val_captions_file", "/tmp/captions_val2014.json",
                        "Validation captions JSON file.")
@@ -203,7 +203,7 @@ def _to_sequence_example(image, decoder, vocab):
     :return:
         A sequenceExample proto.
     """
-    with tf.gfile.FastGFile(image.filename, "r") as f:
+    with tf.gfile.FastGFile(image.filename, "rb") as f:
         encoded_image = f.read()
 
     try:
@@ -480,7 +480,7 @@ def main(unused_argv):
 
     _process_dataset("train", train_dataset, vocab, FLAGS.train_shards)
     _process_dataset("val", val_dataset, vocab, FLAGS.val_shards)
-    _process_dataset("test", test_dataset, FLAGS.test_shards)
+    _process_dataset("test", test_dataset, vocab, FLAGS.test_shards)
 
 if __name__ == "__main__" :
     tf.app.run()

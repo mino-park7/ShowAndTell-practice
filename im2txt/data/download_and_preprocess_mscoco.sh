@@ -30,9 +30,9 @@ if [ -z "$1" ]; then
 fi
 
 if [ "$(uname)" == "Darwin" ]; then
-    UNZIP = "tar -xf"
+    UNZIP="tar -xf"
 else
-    UNZIP = "unzip -nq"
+    UNZIP="unzip -nq"
 fi
 
 # Create the ouput directories
@@ -41,7 +41,7 @@ SCRATCH_DIR="${OUTPUT_DIR}/raw-data"
 mkdir -p "${OUTPUT_DIR}"
 mkdir -p "${SCRATCH_DIR}"
 CURRENT_DIR=$(pwd)
-WORK_DIR="$0.runfiles/im2txt/im2txt"
+WORK_DIR="~/git-reposits/ShowAndTell/ShowAndTell-practice/im2txt/data"
 
 # Helper function to download and unpack a .zip file.
 function download_and_unzip() {
@@ -72,16 +72,16 @@ download_and_unzip ${BASE_IMAGE_URL} ${VAL_IMAGE_FILE}
 VAL_IMAGE_DIR="${SCRATCH_DIR}/val2014"
 
 # Download the captions.
-BASE_CAPTIONS_URL="http://msvocds.blob.core.windows.net/annotations-0-1-3"
+BASE_CAPTIONS_URL="http://msvocds.blob.core.windows.net/annotations-1-0-3"
 CAPTION_FILE="captions_train-val2014.zip"
 download_and_unzip ${BASE_CAPTIONS_URL} ${CAPTION_FILE}
-TRAIN_CAPTIONS_FILE="${SCRATCH_DIR}/annotaions/captions_train2014.json"
-VAL_CAPTIONS_FILE="${SCRACH_DIR}/annotations/captions_val2014.json"
+TRAIN_CAPTIONS_FILE="${SCRATCH_DIR}/annotations/captions_train2014.json"
+VAL_CAPTIONS_FILE="${SCRATCH_DIR}/annotations/captions_val2014.json"
 
 # Build TFRecords of the image data.
 cd "${CURRENT_DIR}"
-BUILD_SCRIPT="{WORK_DIR}/build_mscoco_data"
-"${BUILD_SCRIPT}}" \
+BUILD_SCRIPT="./build_mscoco_data.py"
+python3 build_mscoco_data.py \
     --train_image_dir="${TRAIN_IMAGE_DIR}"\
     --val_image_dir="${VAL_IMAGE_DIR}"\
     --train_captions_file="${TRAIN_CAPTIONS_FILE}"\
