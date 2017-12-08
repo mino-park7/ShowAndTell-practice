@@ -91,6 +91,7 @@ import os.path
 import random
 import sys
 import threading
+import codecs
 
 
 
@@ -183,7 +184,8 @@ def _int64_feature(value):
 
 def _bytes_feature(value):
     """Wrapper for inserting a bytes Feature into a SequenceExample proto."""
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(value)]))
+    return tf.train.Feature(bytes_list=tf.train.BytesList(
+        value=[value.encode('utf-8') if type(value)==str else value]))
 
 def _int64_feature_list(values):
     """Wrapper for inserting a int64 FeatureList into a SequenceExample proto."""
@@ -203,7 +205,7 @@ def _to_sequence_example(image, decoder, vocab):
     :return:
         A sequenceExample proto.
     """
-    with tf.gfile.FastGFile(image.filename, "rb") as f:
+    with tf.gfile.GFile(image.filename, "rb") as f:
         encoded_image = f.read()
 
     try:
@@ -212,7 +214,7 @@ def _to_sequence_example(image, decoder, vocab):
         print("Skipping file with invalid JPEG data: %s" %image.filename)
         return
 
-    context = tf.train.Feature(feature={
+    context = tf.train.Features(feature={
         "image/image_id": _int64_feature(image.image_id),
         "image/data": _bytes_feature(encoded_image),
     })
@@ -220,7 +222,7 @@ def _to_sequence_example(image, decoder, vocab):
     assert len(image.captions) == 1
     caption = image.captions[0]
     caption_ids = [vocab.word_to_id(word) for word in caption]
-    feature_lists = tf.train.FeatureList(feature_list={
+    feature_lists = tf.train.FeatureLists(feature_list={
         "image/caption": _bytes_feature_list(caption),
         "image/caption_ids": _int64_feature_list(caption_ids),
     })
