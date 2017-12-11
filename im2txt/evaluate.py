@@ -79,7 +79,6 @@ def evaluate_model(sess, model, global_step, summary_writer, summary_op):
             model.target_cross_entropy_losses,
             model.target_cross_entropy_losses_weights
         ])
-        print(cross_entropy_losses, weights)
         sum_losses += np.sum(cross_entropy_losses * weights)
         sum_weights += np.sum(weights)
         if not i % 100 :
