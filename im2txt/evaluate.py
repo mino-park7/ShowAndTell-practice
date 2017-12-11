@@ -85,7 +85,6 @@ def evaluate_model(sess, model, global_step, summary_writer, summary_op):
             tf.logging.info("Computed losses for %d of %d batches.", i + 1,
                             num_eval_batchtes)
     eval_time = time.time() - start_time
-
     perplexity = math.exp(sum_losses / sum_weights)
     tf.logging.info("Perplexity = %f (%.2g sec)", perplexity, eval_time)
 
