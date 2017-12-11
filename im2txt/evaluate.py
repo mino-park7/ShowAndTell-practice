@@ -68,22 +68,23 @@ def evaluate_model(sess, model, global_step, summary_writer, summary_op):
     summary_writer.add_summary(summary_str, global_step)
 
     # Compute perplexity over the entire dataset.
-    num_eval_batchtes = int(
+    num_eval_batches = int(
         math.ceil(FLAGS.num_eval_examples / model.config.batch_size))
 
     start_time = time.time()
     sum_losses = 0.
     sum_weights = 0.
-    for i in range(num_eval_batchtes):
+    for i in range(num_eval_batches):
         cross_entropy_losses, weights = sess.run([
             model.target_cross_entropy_losses,
             model.target_cross_entropy_losses_weights
         ])
+        print(cross_entropy_losses, weights)
         sum_losses += np.sum(cross_entropy_losses * weights)
         sum_weights += np.sum(weights)
         if not i % 100 :
             tf.logging.info("Computed losses for %d of %d batches.", i + 1,
-                            num_eval_batchtes)
+                            num_eval_batches)
     eval_time = time.time() - start_time
     perplexity = math.exp(sum_losses / sum_weights)
     tf.logging.info("Perplexity = %f (%.2g sec)", perplexity, eval_time)
