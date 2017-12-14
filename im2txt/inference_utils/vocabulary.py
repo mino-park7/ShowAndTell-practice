@@ -26,7 +26,7 @@ class Vocabulary(object):
 
     def __init__(self,
                  vocab_file,
-                 start_word:"<S>",
+                 start_word="<S>",
                  end_word="</S>",
                  unk_word="<UNK>"):
         """
