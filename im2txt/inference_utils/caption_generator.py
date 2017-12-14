@@ -102,7 +102,7 @@ class TopN(object):
         data = self._data
         self._data = None
         if sort:
-            data.sort(revers=True)
+            data.sort(reverse=True)
         return data
 
     def reset(self):
@@ -167,7 +167,7 @@ class CaptionGenerator(object):
         for _ in range(self.max_caption_length -1):
             partial_captions_list = partial_captions.extract()
             partial_captions.reset()
-            input_feed = np.array([c.sentence[1] for c in partial_captions_list])
+            input_feed = np.array([c.sentence[-1] for c in partial_captions_list])
             state_feed = np.array([c.state for c in partial_captions_list])
 
             softmax, new_states, metadata = self.model.inference_step(sess,
@@ -197,6 +197,9 @@ class CaptionGenerator(object):
                             score /= len(sentence)**self.length_normalization_factor
                         beam = Caption(sentence, state, logprob, score, metadata_list)
                         complete_captions.push(beam)
+                    else:
+                        beam = Caption(sentence, state, logprob, score, metadata_list)
+                        partial_captions.push(beam)
             if partial_captions.size() == 0:
                 # We have run out of partial candidates; happens when beam_size = 1.
                 break
